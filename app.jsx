@@ -45,12 +45,12 @@ function Player(props) {
 var Counter = React.createClass({
   getInitialState:function(){
     return{
-      score:0
+      score:this.props.score
     }
   },
   propTypes:{
   },
-  incrementScore:function(e){
+  incrementScore:function(){
 this.setState({
   score:(this.state.score +1)
 })    
