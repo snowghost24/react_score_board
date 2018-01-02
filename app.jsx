@@ -23,6 +23,7 @@ function Header(props) {
     <div className="header">
       <Stats players={props.players} />
       <h1>{props.title}</h1>
+      <Stopwatch />
     </div>
   )
 }
@@ -129,7 +130,35 @@ var totalPoints = props.players.reduce(function(total,player){
 
 
 
+var Stopwatch = React.createClass({
+  getInitialState:function(){
+return{
+  running:false
+}
+  },
+  onStart:function (){
+    this.setState({running:true});
+  }, 
+  onStop:function (){
+    this.setState({running:false});
+  }, onReset:function (){
 
+  },
+  render:function(){
+   
+    
+    return(
+      <div className="stopwatch">
+      <h2>Stopwatch</h2>
+      <div className="stopwatch-time">0</div>
+      {this.state.running ? 
+      <button onClick={this.onStart}> Stop</button> : 
+      <button onClick={this.onStop}> Start</button>} 
+      <button onClick={this.onReset}>Reset</button>
+      </div>
+    )
+  }
+})
 
 
 var Application = React.createClass({
@@ -171,7 +200,6 @@ var Application = React.createClass({
     this.state.players.splice(index,1);
     //rerenders the state on the callback from child
     this.setState(this.state)
-
   },
   render: function () {
     return (
