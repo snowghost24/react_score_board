@@ -12,14 +12,16 @@ var PLAYERS = [{
   id: 3
 }]
 
+var nextId = 4;
 
 Header.propTypes = {
-  title: React.PropTypes.string.isRequired
+  title:React.PropTypes.string.isRequired,
+  players:React.PropTypes.array.isRequired
 }
 function Header(props) {
   return (
     <div className="header">
-    <Stats />
+      <Stats players={props.players} />
       <h1>{props.title}</h1>
     </div>
   )
@@ -35,17 +37,22 @@ function Player(props) {
   return (
     <div className="player">
       <div className="player-name">
+      <a className="remove-player" onClick={props.onRemove}>x</a>
         {props.name}
       </div>
       <div className="player-score">
         <Counter score={props.score} onChange={props.onScoreChange} />
       </div>
+      
     </div>
   )
 }
 
 
-
+Counter.propTypes = {
+  score: React.PropTypes.number.isRequired,
+  onChange: React.PropTypes.func.isRequired
+}
 function Counter(props) {
   return (
     <div className="counter">
@@ -59,36 +66,68 @@ function Counter(props) {
     </div>
   )
 }
-Counter.propTypes = {
-  score: React.PropTypes.number.isRequired,
-  onChange: React.PropTypes.func.isRequired
-}
 
+var AddPlayerForm = React.createClass({
+  propTypes:{
+    // onAdd:React.PropTypes.func.isRequired
+  },
+  getInitialState:function (){
+    return { 
+      name:"",
+    }
+  },
+  onNameChange:function(e){
+    this.setState({
+      name: e.target.value
+    })
+  },
+  onSubmit:function(e){
+    //prevents page from reloading on submit
+    e.preventDefault()
+    //sending onAdd up to parent as callback
+    this.props.onAdd(this.state.name);
+    //empties the field after submit
+    this.setState({name:""})
+  },
+  render:function(){
+    return (
+      <div className="add-player-form"> 
+      <form action="" onSubmit={this.onSubmit}>
+      <input type="text" value={this.state.name} onChange={this.onNameChange}/>
+      <input type="submit" value="add player"/>
+      </form>
+      </div>
+    )
+  }
+})
+
+
+Stats.propTypes = {
+  players: React.PropTypes.array.isRequired
+}
 function Stats(props) {
-  var totalPlayers = props.players.lenght;
+  var totalPlayers =props.players.length
+  //itirates through the array and adds each score to total
+var totalPoints = props.players.reduce(function(total,player){
+  return total + player.score
+},0)
   return (
     <table className="stats">
       <tbody>
         <tr>
-          <td>
-            Players:
-        </td>
-          <td>
-          totalPlayers
-        </td>
+          <td>Players:</td>
+          <td>{totalPlayers}</td>
         </tr>
         <tr>
-          <td>Total Points</td>
-          <td>123</td>
+          <td>Total Score</td>
+          <td>{totalPoints}</td>
         </tr>
       </tbody>
     </table>
   )
 }
 
-Stats.propTypes = {
-  players: React.PropTypes.array.isRequired
-}
+
 
 
 
@@ -115,10 +154,22 @@ var Application = React.createClass({
   getDefaultProp: function () {
     title: "Scoreboard"
   },
+  onPlayerAdd:function(name){
+    console.log('player added:',name);
+    //push the name into the players array
+    this.state.players.push({
+      name:name,
+      score:0,
+      id: nextId
+    });
+    this.setState(this.state);
+    // everytime the onPlayerAdd function is call the id number is increased
+    nextId+=1;
+  },
   render: function () {
     return (
       <div className="scoreboard">
-        <Header title={this.props.title} />
+        <Header title={this.props.title} players={this.state.players}/>
         <div className="players">
           {this.props.initialPlayers.map(function (player, index) {
             return (
@@ -130,6 +181,7 @@ var Application = React.createClass({
             )
           }.bind(this))}
         </div>
+        <AddPlayerForm onAdd={this.onPlayerAdd} />
       </div>
     )
   }
