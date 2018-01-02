@@ -31,7 +31,8 @@ function Header(props) {
 Player.propTypes = {
   name: React.PropTypes.string.isRequired,
   score: React.PropTypes.number.isRequired,
-  onScoreChange: React.PropTypes.func.isRequired
+  onScoreChange: React.PropTypes.func.isRequired,
+  onRemove:React.PropTypes.func.isRequired
 }
 function Player(props) {
   return (
@@ -43,7 +44,6 @@ function Player(props) {
       <div className="player-score">
         <Counter score={props.score} onChange={props.onScoreChange} />
       </div>
-      
     </div>
   )
 }
@@ -166,6 +166,13 @@ var Application = React.createClass({
     // everytime the onPlayerAdd function is call the id number is increased
     nextId+=1;
   },
+  onRemovePlayer:function(index){
+    console.log(index)
+    this.state.players.splice(index,1);
+    //rerenders the state on the callback from child
+    this.setState(this.state)
+
+  },
   render: function () {
     return (
       <div className="scoreboard">
@@ -176,6 +183,8 @@ var Application = React.createClass({
               <Player
                 onScoreChange={function (delta) { this.onScoreChange(index, delta) }.bind(this)}
                 name={player.name}
+                //use bind this when you are using a unanimous function
+                onRemove={function(){this.onRemovePlayer(index)}.bind(this)}
                 score={player.score}
                 key={player.id} />
             )
