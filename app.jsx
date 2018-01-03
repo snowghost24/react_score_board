@@ -166,10 +166,14 @@ componentWillUnmount:function(){
   onStop:function (){
     this.setState({running:false});
   }, onReset:function (){
+    this.setState({
+      elapsedTime:0,
+      previousTime:Date.now()
+    })
 
   },
   render:function(){
-    var seconds = Math.floor(this.state.elapsedTime / 1000)
+    var seconds = Math.floor(this.state.elapsedTime / 1000);
     return(
       <div className="stopwatch">
       <h2>Stopwatch</h2>
