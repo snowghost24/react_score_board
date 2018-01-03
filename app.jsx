@@ -133,11 +133,35 @@ var totalPoints = props.players.reduce(function(total,player){
 var Stopwatch = React.createClass({
   getInitialState:function(){
 return{
-  running:false
+  running:false,
+  elapsedTime:0,
+  previousTime:0,
 }
   },
+  componentDidMount:function (){
+//save the interval to this.interval so it can be cleared
+//calls the function onTick every Second
+this.interval = setInterval(this.onTick, 100)  },
+
+componentWillUnmount:function(){
+  clearInterval(this.interval);
+}
+// Calculates the time between the two times and the difference is time elapsed
+  ,onTick:function(){
+    if (this.state.running){
+      var now = Date.now();
+      this.setState({
+        previousTime:now,
+        elapsedTime:this.state.elapsedTime + (now - this.state.previousTime),
+      })
+    }
+    console.log("hello");
+  },
   onStart:function (){
-    this.setState({running:true});
+    this.setState({running:true,
+      previousTime:Date.now()});
+   
+    console.log("I was pressed");
   }, 
   onStop:function (){
     this.setState({running:false});
@@ -145,20 +169,20 @@ return{
 
   },
   render:function(){
-   
-    
+    var seconds = Math.floor(this.state.elapsedTime / 1000)
     return(
       <div className="stopwatch">
       <h2>Stopwatch</h2>
-      <div className="stopwatch-time">0</div>
+      <div className="stopwatch-time">{seconds}</div>
       {this.state.running ? 
-      <button onClick={this.onStart}> Stop</button> : 
-      <button onClick={this.onStop}> Start</button>} 
+      <button onClick={this.onStop}>Stop</button> : 
+      <button onClick={this.onStart}>Start</button>} 
       <button onClick={this.onReset}>Reset</button>
       </div>
     )
   }
 })
+
 
 
 var Application = React.createClass({
